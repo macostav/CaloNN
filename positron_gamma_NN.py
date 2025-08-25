@@ -15,7 +15,7 @@ import sys
 from tqdm import tqdm
 
 """
-Simple CNN to detect straight lines vs parabolas.
+Simple CNN to discern between positrons and gammas entering the detector.
 """
 
 class CaloDataset(Dataset):
