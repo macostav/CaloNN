@@ -15,18 +15,37 @@ import sys
 from tqdm import tqdm
 
 """
-Simple CNN to discern between positrons and gammas entering the detector.
+Simple CNN to discern between positrons and gammas entering the PIONEER calorimeter. 
+Note: a pencil source was used to generate the data.
 """
 
 class CaloDataset(Dataset):
-    def __init__(self, data_dir, transform = None):
-        pass # TODO: Implement dataset loading logic here
+    def __init__(self, data_path, split = "train", transform = None):
+        # Load data
+        data = torch.load(data_path)
+
+        if split == "train":
+            self.X = data["X_train"]
+            self.y = data["y_train"]
+        elif split == "val":
+            self.X = data["X_val"]
+            self.y = data["y_val"]
+        else:
+            raise ValueError("Split must be either 'train' or 'val'")
+        
+        self.transform = transform
 
     def __len__(self):
         return len(self.data)
     
     def __getitem__(self, index):
-        return self.data[index]
+        X = self.X[index]
+        y = self.y[index]
+
+        if self.transform:
+            X = self.transform(X)
+
+        return X, y
 
 class CaloClassifier(nn.Module):
     def __init__(self, num_classes = 2):
@@ -52,8 +71,12 @@ if __name__ == "__main__":
     # Setting up the data
     transform = transforms.ToTensor() # Convert images to tensors
 
-    train_dataset = CaloDataset(data_dir = "data/training", transform = transform) # label: 0 is parabola; 1 is straight line
-    test_dataset = CaloDataset(data_dir = "data/testing", transform = transform)
+    train_dataset = CaloDataset("prepared_dataset.pt", split="train") # 0 is gamma; 1 is positron
+    val_dataset   = CaloDataset("prepared_dataset.pt", split="val")
+
+    # TODO EDIT EVERYTHING BELOW
+    train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+    val_loader   = DataLoader(val_dataset, batch_size=64, shuffle=False)
 
     train_loader = DataLoader(train_dataset, batch_size = 32, shuffle = True)
     test_loader = DataLoader(test_dataset, batch_size =32, shuffle = False) # Don't need shuffling when checking model accuracy

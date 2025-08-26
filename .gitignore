@@ -1,0 +1,5 @@
+# Ignore numpy files
+*.npy
+
+# Ignore PyTorch files
+*.pt

@@ -14,7 +14,7 @@ if __name__ == "__main__":
     # Build TChain with all trees in simulation
     chain = ROOT.TChain("sim")
     for i in range(32):
-        chain.Add(f"{folder}/gamma_-{i:02d}.root")
+        chain.Add(f"{folder}/gamma_-{i:02d}.root") # gamma or positron doesn't really matter
 
     n_events = chain.GetEntries()
     print(f"Processing {n_events} events...")
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     index_to_sipm_id = {idx: sipm_id for sipm_id, idx in sipm_id_to_index.items()}
 
     # Save the mappings
-    # Save as pickle (Python-specific, preserves exact data types)
+    # Save as pickle
     with open('sipm_id_mapping.pkl', 'wb') as f:
         pickle.dump({
             'sipm_id_to_index': sipm_id_to_index,
@@ -57,7 +57,7 @@ if __name__ == "__main__":
             'n_unique_sipms': n_unique_sipms
         }, f)
 
-    # Save as JSON (human-readable)
+    # Save as JSON
     with open('sipm_id_mapping.json', 'w') as f:
         json.dump({
             'sipm_id_to_index': {str(k): v for k, v in sipm_id_to_index.items()},
@@ -73,4 +73,3 @@ if __name__ == "__main__":
     print(f"  - simp_id_mapping.pkl")
     print(f"  - sipm_id_mapping.json") 
     print(f"  - all_sipm_ids.npy")
-    print(f"\nDictionary generation complete!")

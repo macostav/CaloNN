@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 
 """
-We extract the data from the PIONEER simulation ROOT files and prepare them for the NN.
+We extract the data from the PIONEER simulation ROOT files.
 """
 
 if __name__ == "__main__":
@@ -13,10 +13,12 @@ if __name__ == "__main__":
 
     sipm_id_to_index = mapping['sipm_id_to_index']
     n_unique_sipms = mapping['n_unique_sipms'] # Should be 1891
+
+    print(f"NUM UNIQUE SIMPS IS {n_unique_sipms}")
     
     # ROOT data extraction
     folder = "/data_macosta/CaloSims"
-    particle_type = "gamma" # gamma or positron
+    particle_type = "positron" # gamma or positron
 
     # Build TChain with all trees in simulation
     chain = ROOT.TChain("sim")
