@@ -4,7 +4,7 @@ This repository contains a simple NN that is used to differentiate events where 
 ## 1d_data
 This directory contains work done with 1d data. What this means is that the data being used by the NN is an array containing the proportion of hits that each SiPM got in an event. The array is ordered by SiPM ID. As an example, consider a simple case where we have 3 SiPMs with IDs: $\{1,2,3\}$. The data being fed is an array of the form:
 
-$$[\frac{\text{hits in 1}}{total hits}, \frac{\text{hits in 2}}{total hits}, \frac{\text{hits in 3}}{total hits} ]$$
+$$\biggl[\frac{\text{hits in 1}}{\text{total hits}}, \frac{\text{hits in 2}}{\text{total hits}}, \frac{\text{hits in 3}}\text{{total hits}} \biggr]$$
 
 ## 2d_data
 The data being used here is the same as before, but the presentation is a bit different. In this case, we want to project the geometry of the SiPMs into a 2d grid to feed to the NN. This approach has more potential than the previous one, as projecting the SiPMs into a 2D grid can give the NN more information about the actual hit patterns that can be observed with each event.
