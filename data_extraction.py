@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 
 """
-We extract the data from the PIONEER simulation ROOT files.
+We extract the data from the PIONEER simulation ROOT files. We save the data as a numpy array.
 """
 
 if __name__ == "__main__":

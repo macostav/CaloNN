@@ -8,11 +8,11 @@ Takes all of the data we have for our NN, separates it into different datasets, 
 
 if __name__ == "__main__":
     # Reading numpy files and preparing labels
-    gamma_data = np.load("gamma_cnn_data.npy")
+    gamma_data = np.load("data/gamma_cnn_data.npy")
     n_gamma_events = len(gamma_data[:,0])
     gamma_labels = np.zeros(n_gamma_events, dtype = int)
 
-    positron_data = np.load("positron_cnn_data.npy")
+    positron_data = np.load("data/positron_cnn_data.npy")
     n_positron_events = len(gamma_data[:,0])
     positron_labels = np.ones(n_positron_events, dtype = int)
     
