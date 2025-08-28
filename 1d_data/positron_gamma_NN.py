@@ -15,7 +15,7 @@ import sys
 from tqdm import tqdm
 
 """
-Simple CNN to discern between positrons and gammas entering the PIONEER calorimeter. 
+Simple NN to discern between positrons and gammas entering the PIONEER calorimeter. 
 Note: a pencil source was used to generate the data.
 """
 
