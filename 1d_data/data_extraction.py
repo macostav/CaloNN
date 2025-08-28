@@ -13,8 +13,6 @@ if __name__ == "__main__":
 
     sipm_id_to_index = mapping['sipm_id_to_index']
     n_unique_sipms = mapping['n_unique_sipms'] # Should be 1891
-
-    print(f"NUM UNIQUE SIMPS IS {n_unique_sipms}")
     
     # ROOT data extraction
     folder = "/data_macosta/CaloSims"

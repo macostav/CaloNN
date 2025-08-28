@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "e_drift_sim.C": "cpp"
+        "e_drift_sim.C": "cpp",
+        "poly_clustering.C": "cpp"
     }
 }

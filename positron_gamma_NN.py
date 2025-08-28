@@ -15,9 +15,13 @@ import sys
 from tqdm import tqdm
 
 """
-Simple NN to discern between positrons and gammas entering the PIONEER calorimeter. 
+Simple CNN to discern between positrons and gammas entering the PIONEER calorimeter. 
 Note: a pencil source was used to generate the data.
 """
+
+# TODO Dataset related things will probably need to be adjusted to work with the data we have
+
+# TODO For CaloClassifier, you might need to add a transform for the images; you probably only need one to make sure the sizes work well
 
 ### DATASET DEFINITION ###
 class CaloDataset(Dataset):
@@ -51,90 +55,26 @@ class CaloDataset(Dataset):
 
 ### MODELS ###
 
-class SimpleCaloClassifier(nn.Module):
-    def __init__(self, num_classes=2):
-        super(SimpleCaloClassifier, self).__init__()
-        self.conv1 = nn.Conv1d(1, 32, kernel_size=5, stride=1, padding=2)  
-        self.pool = nn.MaxPool1d(2)
-        self.conv2 = nn.Conv1d(32, 64, kernel_size=5, stride=1, padding=2)
-        self.fc1 = nn.Linear(64 * (1894 // 4), 128)  # after two pools
-        self.fc2 = nn.Linear(128, num_classes)
-        self.relu = nn.ReLU()
-        self.dropout = nn.Dropout(0.3)
+# Uses a preexisting model
+class CaloClassifier(nn.Module):
+    def __init__(self, num_classes = 2):
+        super(CaloClassifier, self).__init__()
+        self.base_model = timm.create_model('efficientnet_b0', pretrained=True) # The weights are already set; no need to train them
+        self.features = nn.Sequential(*list(self.base_model.children())[:-1]) # Get rid of final layer of model
 
-    def forward(self, x):
-        x = self.pool(self.relu(self.conv1(x)))   # (N, 32, 947)
-        x = self.pool(self.relu(self.conv2(x)))   # (N, 64, 473)
-        x = x.view(x.size(0), -1)                 # flatten
-        x = self.relu(self.fc1(x))
-        x = self.dropout(x)
-        x = self.fc2(x)
-        return x
-    
-class CaloMLPClassifier(nn.Module):
-    def __init__(self, input_dim=1894, num_classes=2):
-        super(CaloMLPClassifier, self).__init__()
-        self.layers = nn.Sequential(
-            nn.Linear(input_dim, 512),   # first dense layer
-            nn.ReLU(),
-            nn.Dropout(0.3),
-
-            nn.Linear(512, 256),         # second dense layer
-            nn.ReLU(),
-            nn.Dropout(0.3),
-
-            nn.Linear(256, 64),          # bottleneck layer
-            nn.ReLU(),
-
-            nn.Linear(64, num_classes)   # output logits
-        )
-
-    def forward(self, x):
-        # Ensure input is (batch_size, input_dim)
-        if x.ndim > 2:  
-            x = x.view(x.size(0), -1)
-        return self.layers(x)
-    
-class CaloCNNClassifier(nn.Module):
-    def __init__(self, input_length=1894, num_classes=2):
-        super(CaloCNNClassifier, self).__init__()
-
-        self.features = nn.Sequential(
-            nn.Conv1d(1, 32, kernel_size=7, stride=1, padding=3),  # keep length
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.MaxPool1d(2),   # halve length → ~947
-
-            nn.Conv1d(32, 64, kernel_size=7, stride=1, padding=3),
-            nn.BatchNorm1d(64),
-            nn.ReLU(),
-            nn.MaxPool1d(2),   # halve length → ~473
-
-            nn.Conv1d(64, 128, kernel_size=7, stride=1, padding=3),
-            nn.BatchNorm1d(128),
-            nn.ReLU(),
-            nn.MaxPool1d(2),   # halve length → ~236
-        )
-
-        # compute flattened size after convolutions
-        conv_out_size = 128 * (input_length // (2**3))  # three pools → /8
-
+        enet_output_size = 1280 # The output size of the model
+        
+        # Make a classifier
         self.classifier = nn.Sequential(
-            nn.Linear(conv_out_size, 256),
-            nn.ReLU(),
-            nn.Dropout(0.4),
-
-            nn.Linear(256, 64),
-            nn.ReLU(),
-
-            nn.Linear(64, num_classes)
+            nn.Flatten(), # Flatten the tensors into a 1D vector
+            nn.Linear(enet_output_size, num_classes) # Maps the 1280 output to our two classes; line or parabola
         )
 
     def forward(self, x):
-        # Expecting shape: (batch, 1, input_length)
-        x = self.features(x)
-        x = x.view(x.size(0), -1)  # flatten
-        return self.classifier(x)
+        # Connect these parts and return the output
+        x = self.features(x) # Pattern recognition part
+        output = self.classifier(x) # Last layer for classification of images
+        return output
     
 if __name__ == "__main__":
     # Setting up the data
@@ -150,7 +90,7 @@ if __name__ == "__main__":
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu") # Use GPU if possible for faster training
 
-    model = CaloCNNClassifier()
+    model = CaloClassifier()
     model.to(device)
 
     criterion = nn.CrossEntropyLoss() # Loss function; standard for multi-class classification; penalizes high confidence wrong predictions
