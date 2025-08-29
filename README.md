@@ -7,7 +7,7 @@ This directory contains work done with 1d data. What this means is that the data
 $$\biggl[\frac{\text{hits in 1}}{\text{total hits}}, \frac{\text{hits in 2}}{\text{total hits}}, \frac{\text{hits in 3}}{\text{total hits}} \biggr]$$
 
 ## 2d_data
-The data being used here is the same as before, but the presentation is a bit different. In this case, we want to project the geometry of the SiPMs into a 2d grid to feed to the NN. This approach has more potential than the previous one, as projecting the SiPMs into a 2D grid can give the NN more information about the actual hit patterns that can be observed with each event.
+The data being used here is the same as before, but the presentation is a bit different. In this case, we want to project the geometry of the SiPMs into a 2d grid to feed to the NN. This approach has more potential than the previous one, as projecting the SiPMs into a 2D grid can give the NN more information about the actual hit patterns that can be observed with each event. For the sake of simplicity, we start by only projecting the inner surface and making that the data used for the NN.
 
 ## sipm_info
 This folder contains useful mappings to easily access information from the sipms. These mappings include mapping the SiPM ID to an index in an array (and viceversa), as well as a mapping from SiPM ID to geometry.

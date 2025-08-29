@@ -57,10 +57,10 @@ class SimpleCaloClassifier(nn.Module):
         self.conv1 = nn.Conv1d(1, 32, kernel_size=5, stride=1, padding=2)  
         self.pool = nn.MaxPool1d(2)
         self.conv2 = nn.Conv1d(32, 64, kernel_size=5, stride=1, padding=2)
-        self.fc1 = nn.Linear(64 * (1894 // 4), 128)  # after two pools
+        self.fc1 = nn.Linear(64 * (1894 // 4), 128)
         self.fc2 = nn.Linear(128, num_classes)
         self.relu = nn.ReLU()
-        self.dropout = nn.Dropout(0.3)
+        self.dropout = nn.Dropout(0.3) # Setting some neurons to zero to force the network to learn more general patterns
 
     def forward(self, x):
         x = self.pool(self.relu(self.conv1(x)))   # (N, 32, 947)
@@ -75,7 +75,7 @@ class CaloMLPClassifier(nn.Module):
     def __init__(self, input_dim=1894, num_classes=2):
         super(CaloMLPClassifier, self).__init__()
         self.layers = nn.Sequential(
-            nn.Linear(input_dim, 512),   # first dense layer
+            nn.Linear(input_dim, 512),   # linear transformation on the data
             nn.ReLU(),
             nn.Dropout(0.3),
 
